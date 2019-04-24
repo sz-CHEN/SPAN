@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 #include "SPANHeader.h"
-#include "SPANMessage.h"
 namespace SPAN {
 struct BESTSATS;
 class Parser {
