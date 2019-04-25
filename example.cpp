@@ -7,6 +7,7 @@
 #include "SPANParser.h"
 
 int main(int argc, char const *argv[]) {
+    std::cout<<sizeof(SPAN::Header)<<"\n";
     std::ifstream gpsFile("BFN16410081_09-06-2018_21-56-27.gps");
     if (!gpsFile.good()) {
         return -1;
@@ -187,6 +188,7 @@ int main(int argc, char const *argv[]) {
     while (!gpsFile.eof()) {
         std::string s;
         std::getline(gpsFile, s);
+        std::cout<<s<<std::endl;
         parser.push(s);
     }
     fINSPVAS.close();

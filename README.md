@@ -49,9 +49,9 @@ int main(int argc, char* argv[]){
 
 ### Example
 
-***Find TODO***
+*Find TODO*
 
-1. INSVEL
+#### LOG INSVEL
 
 | Field | Field Type        | Description                                                    | Format | Binary Bytes | Binary Offset |
 |-------|-------------------|----------------------------------------------------------------|--------|--------------|---------------|
@@ -71,7 +71,7 @@ int main(int argc, char* argv[]){
 // Example for messages with general header.
 
 ////// TODO: Add here
-DEFINE_SPAN_MESSAGE(
+DEFINE_SPAN_MESSAGE(40,
     INSVEL,
     //The data fields of INSVEL except Log Header, xxxx and [CR][LF]
     ULong week; Double seconds_into_week; Double north_velocity;
@@ -151,7 +151,7 @@ inline bool ConstructBINWithoutHeader(MessageID id, std::string data,
 
 ```
 
-2. INSVELS
+#### LOG INSVELS
 
 This log is the short header version of the INSVEL log.  
 
@@ -163,7 +163,7 @@ This log is the short header version of the INSVEL log.
 
 ////// TODO: Add here
 // Replace last part DEFINE_SPAN_MESSAGE to DEFINE_SPAN_MESSAGE_WITH_SHORT
-DEFINE_SPAN_MESSAGE_WITH_SHORT(
+DEFINE_SPAN_MESSAGE_WITH_SHORT(40,
     INSVEL,
     //The data fields of INSVEL except Log Header, xxxx and [CR][LF]
     ULong week; Double seconds_into_week; Double north_velocity;

@@ -94,10 +94,12 @@ void Parser::push(std::string buf) {
                                 if (msg.size() > 2) {
                                     if (msg[2] == char(0x12)) {
                                         parseState = ParseState::BinaryHeader;
+                                        loop = true;
                                     } else if (msg[2] == char(0x13)) {
                                         dataType = DataType::ShortBinary;
                                         parseState =
                                             ParseState::ShortBinaryHeader;
+                                        loop = true;
                                     } else {
                                         msg.erase(0, 2);
                                         loop = true;
@@ -112,10 +114,12 @@ void Parser::push(std::string buf) {
                     case DataType::ASCII: {
                         parseState = ParseState::ASCIIHeader;
                         msg.erase(0, index);
+                        loop = true;
                     } break;
                     case DataType::ShortASCII: {
                         parseState = ParseState::ShortASCIIHeader;
                         msg.erase(0, index);
+                        loop = true;
                     } break;
                     case DataType::Unknown:
                     default:

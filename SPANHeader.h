@@ -5,19 +5,18 @@
 namespace SPAN {
 // 28
 struct Header {
-    using GPSec = ULong;
     Char sync[3] = {char(0xAA), char(0x44), char(0x12)};  // 0xAA 0x44 0x12
     UChar header_length;
     MessageID message_ID;
-    Char message_type;
+    MessageType message_type;
     UChar port_address;
-    UShort message_length;
+    UShort message_length; // used as port_address when ascii mode
     UShort sequence;
     UChar idel_time;
     TimeStatus time_status;
     UShort week;
     GPSec ms;
-    ULong receiver_status;
+    ReceiverStatus receiver_status;
     UShort reserved;
     UShort receiver_S_W_version;
 
@@ -33,8 +32,8 @@ struct Header {
         }
         try {
             __t.message_ID = MessageIDFromName(str[0]);
-            __t.port_address =
-                (UChar)((UShort)DetailedPortIdentifierFromName(str[1]) & 0xFF);
+            __t.message_length = (UShort)DetailedPortIdentifierFromName(str[1]);
+            __t.port_address = (UChar)(__t.message_length & 0xFF);
             __t.sequence = std::stol(str[2]);
             __t.idel_time = std::stof(str[3]) * 2;
             __t.time_status = TimeStatusFromName(str[4]);

@@ -18,14 +18,43 @@ static_assert(std::numeric_limits<double>::is_iec559 &&
                   std::numeric_limits<float>::is_iec559,
               "Requires IEEE 754 floating point!");
 
-using Char = char;
-using UChar = unsigned char;
-using Short = short;
-using UShort = unsigned short;
+using Char = int8_t;
+using UChar = uint8_t;
+using Short = int16_t;
+using UShort = uint16_t;
 using Long = int32_t;
 using ULong = uint32_t;
 using Double = double;
 using Float = float;
+using GPSec = Long;
+using Boolean = ULong;
+
+inline ULong StoUL(const std::string& __str, std::size_t* __idx = 0,
+                   int __base = 10) {
+    return std::stoul(__str, __idx, __base);
+}
+inline Long StoL(const std::string& __str, std::size_t* __idx = 0,
+                 int __base = 10) {
+    return std::stol(__str, __idx, __base);
+}
+inline UShort StoUS(const std::string& __str, std::size_t* __idx = 0,
+                    int __base = 10) {
+    return std::stoi(__str, __idx, __base);
+}
+inline Short StoS(const std::string& __str, std::size_t* __idx = 0,
+                  int __base = 10) {
+    return std::stoi(__str, __idx, __base);
+}
+inline Double StoD(const std::string& __str, std::size_t* __idx = 0) {
+    return std::stod(__str, __idx);
+}
+inline Float StoF(const std::string& __str, std::size_t* __idx = 0) {
+    return std::stof(__str, __idx);
+}
+inline UChar StoUC(const std::string& __str, std::size_t* __idx = 0,
+                   int __base = 10) {
+    return std::stoi(__str, __idx, __base);
+}
 
 DECLARE_ENUM_WITH_TYPE(TimeStatus, UChar,
                        // enum struct TimeStatus : UChar {
@@ -346,6 +375,573 @@ DECLARE_ENUM_WITH_TYPE(ObservationStatuses, ULong, GOOD = 0, BADHEALTH,
                        OBSE5, OBSB2, OBSB1, NOSIGNALMATCH = 25, SUPPLEMENTARY,
                        NA = 99, BAD_INTEGRITY, LOSSOFLOCK, NOAMBIGUITY)
 
+DECLARE_ENUM_WITH_TYPE(WheelStatus, ULong, INACTIVE = 0, ACTIVE, USED, UNSYNCED,
+                       BAS_MISC, HIGH_ROTATION)
+
+DECLARE_ENUM_WITH_TYPE(HeadingUpdateValues, ULong, INACTIVE = 0, ACTIVE, USED)
+
+// TODO: Define enum value here
+// DECLARE_ENUM_WITH_TYPE(EnumType, ValueType, Value ...)
+
+class ReceiverStatus {
+   public:
+    enum class BIT_ReceiverStatus : UChar {
+        ErrorFlag = 0,
+        TemperatureStatus,
+        VoltageSupplyStatus,
+        AntennaPowerStatus,
+        LNAFailure,
+        AntennaOpenFlag,
+        AntennaShortedFlag,
+        CPUOverloadFlag,
+        COM1BufferOverrunFlag,
+        COM2BufferOverrunFlag,
+        COM3BufferOverrunFlag,
+        LinkOverrunFlag,
+        Reserved12,
+        AuxTransmitOverrunFlag,
+        AGCOutOfRange,
+        Reserved15,
+        INSReset,
+        Reserved17,
+        AlmanacFlag_UTCKnown,
+        PositionSolutionFlag,
+        PositionFixedFlag,
+        ClockSteeringStatus,
+        ClockModelFlag,
+        ExternalOscillatorLockedFlag,
+        SoftwareResource,
+        Reserved25,
+        Reserved26,
+        Reserved27,
+        Reserved28,
+        Auxiliary3StatusEventFlag,
+        Auxiliary2StatusEventFlag,
+        Auxiliary1StatusEventFlag,
+    };
+
+   private:
+    ULong value;
+
+   public:
+    ReceiverStatus() {}
+    ReceiverStatus(const ULong& value) noexcept : value(value) {}
+    ReceiverStatus(const ULong&& value) noexcept : value(value) {}
+    ReceiverStatus(const ReceiverStatus&) noexcept = default;
+    ReceiverStatus& operator=(const ReceiverStatus&) noexcept = default;
+    ReceiverStatus(ReceiverStatus&&) noexcept = default;
+    ReceiverStatus& operator=(ReceiverStatus&&) noexcept = default;
+    ReceiverStatus& operator=(const ULong& value) noexcept {
+        this->value = value;
+        return *this;
+    }
+    ReceiverStatus& operator=(const ULong&& value) noexcept {
+        this->value = value;
+        return *this;
+    }
+    operator const ULong() noexcept { return this->value; }
+};
+
+class MessageType {
+   public:
+    enum class Mask : Char {
+        MeasurementSource = 0x1F,
+        Format = 0x60,
+        ResponseBit = Char(0x80)
+    };
+
+    enum class Format : Char {
+        Binary = 0,
+        ASCII = 1 << 5,
+        AbbreviatedASCII_NMEA = 1 << 6,
+        Reserved = (1 << 5) | (1 << 6)
+    };
+
+    enum class ResponseBit : Char {
+        OriginalMessage = 0,
+        ResponseMessage = Char(1 << 7)
+    };
+
+   private:
+    Char value;
+
+   public:
+    MessageType() {}
+    MessageType(const Char& value) noexcept : value(value) {}
+    MessageType(const Char&& value) noexcept : value(value) {}
+    MessageType(const MessageType&) noexcept = default;
+    MessageType& operator=(const MessageType&) noexcept = default;
+    MessageType(MessageType&&) noexcept = default;
+    MessageType& operator=(MessageType&&) noexcept = default;
+    MessageType& operator=(const Char& value) noexcept {
+        this->value = value;
+        return *this;
+    }
+    MessageType& operator=(const Char&& value) noexcept {
+        this->value = value;
+        return *this;
+    }
+    operator const Char() noexcept { return this->value; }
+};
+
+class INSExtendedSolutionStatus {
+   public:
+    enum class BIT_INSExtendedSolutionStatus : ULong {
+        PositionUpdate = 0,
+        PhaseUpdate,
+        ZUPT,
+        WheelSensorUpdate,
+        HeadingUpdate,
+        ConvergedError = 6
+    };
+
+   private:
+    ULong value;
+
+   public:
+    INSExtendedSolutionStatus() {}
+    INSExtendedSolutionStatus(const ULong& value) noexcept : value(value) {}
+    INSExtendedSolutionStatus(const ULong&& value) noexcept : value(value) {}
+    INSExtendedSolutionStatus(const INSExtendedSolutionStatus&) noexcept =
+        default;
+    INSExtendedSolutionStatus& operator=(
+        const INSExtendedSolutionStatus&) noexcept = default;
+    INSExtendedSolutionStatus(INSExtendedSolutionStatus&&) noexcept = default;
+    INSExtendedSolutionStatus& operator=(INSExtendedSolutionStatus&&) noexcept =
+        default;
+    INSExtendedSolutionStatus& operator=(const ULong& value) noexcept {
+        this->value = value;
+        return *this;
+    }
+    INSExtendedSolutionStatus& operator=(const ULong&& value) noexcept {
+        this->value = value;
+        return *this;
+    }
+    operator const ULong() noexcept { return this->value; }
+};
+
+class ExtendedSolutionStatus {
+   public:
+    enum class Mask : UChar {
+        Solution = 0x01,
+        PseudorangeIonoCorrection = 0x0E,
+        RTKASSISTActive = 0x10,
+        Antenna = 0x20,
+        Reserved = 0xC0
+    };
+
+    enum class PseudorangeIonoCorrection : UChar {
+        UnknownOrDefaultKlobucharModel = 0,
+        KlobucharBroadcast = 1 << 1,
+        SBASBroadcast = 2 << 1,
+        Multi_frequencyComputed = 3 << 1,
+        PSRDiffCorrection = 4 << 1,
+        NovAtelBlendedIonoValue = 5 << 1
+    };
+
+   private:
+    UChar value;
+
+   public:
+    ExtendedSolutionStatus() {}
+    ExtendedSolutionStatus(const UChar& value) noexcept : value(value) {}
+    ExtendedSolutionStatus(const UChar&& value) noexcept : value(value) {}
+    ExtendedSolutionStatus(const ExtendedSolutionStatus&) noexcept = default;
+    ExtendedSolutionStatus& operator=(const ExtendedSolutionStatus&) noexcept =
+        default;
+    ExtendedSolutionStatus(ExtendedSolutionStatus&&) noexcept = default;
+    ExtendedSolutionStatus& operator=(ExtendedSolutionStatus&&) noexcept =
+        default;
+    ExtendedSolutionStatus& operator=(const UChar& value) noexcept {
+        this->value = value;
+        return *this;
+    }
+    ExtendedSolutionStatus& operator=(const UChar&& value) noexcept {
+        this->value = value;
+        return *this;
+    }
+    operator const UChar() noexcept { return this->value; }
+};
+
+class BESTPOSGPSAndGLONASSSignalUsedMask {
+   public:
+    enum class BIT_SignalUsed : UChar {
+        GPSL1 = 0,
+        GPSL2,
+        GPSL5,
+        GLONASSL1 = 4,
+        GLONASSL2,
+    };
+
+   private:
+    UChar value;
+
+   public:
+    BESTPOSGPSAndGLONASSSignalUsedMask() {}
+    BESTPOSGPSAndGLONASSSignalUsedMask(const UChar& value) noexcept
+        : value(value) {}
+    BESTPOSGPSAndGLONASSSignalUsedMask(const UChar&& value) noexcept
+        : value(value) {}
+    BESTPOSGPSAndGLONASSSignalUsedMask(
+        const BESTPOSGPSAndGLONASSSignalUsedMask&) noexcept = default;
+    BESTPOSGPSAndGLONASSSignalUsedMask& operator=(
+        const BESTPOSGPSAndGLONASSSignalUsedMask&) noexcept = default;
+    BESTPOSGPSAndGLONASSSignalUsedMask(
+        BESTPOSGPSAndGLONASSSignalUsedMask&&) noexcept = default;
+    BESTPOSGPSAndGLONASSSignalUsedMask& operator=(
+        BESTPOSGPSAndGLONASSSignalUsedMask&&) noexcept = default;
+    BESTPOSGPSAndGLONASSSignalUsedMask& operator=(const UChar& value) noexcept {
+        this->value = value;
+        return *this;
+    }
+    BESTPOSGPSAndGLONASSSignalUsedMask& operator=(
+        const UChar&& value) noexcept {
+        this->value = value;
+        return *this;
+    }
+    operator const UChar() noexcept { return this->value; }
+};
+
+class BESTPOSGalileoAndBeiDouSignalUsedMask {
+   public:
+    enum class BIT_SignalUsed : UChar {
+        GalileoE1 = 0,
+        BeiDouB1 = 4,
+        BeiDouB2,
+    };
+
+   private:
+    UChar value;
+
+   public:
+    BESTPOSGalileoAndBeiDouSignalUsedMask() {}
+    BESTPOSGalileoAndBeiDouSignalUsedMask(const UChar& value) noexcept
+        : value(value) {}
+    BESTPOSGalileoAndBeiDouSignalUsedMask(const UChar&& value) noexcept
+        : value(value) {}
+    BESTPOSGalileoAndBeiDouSignalUsedMask(
+        const BESTPOSGalileoAndBeiDouSignalUsedMask&) noexcept = default;
+    BESTPOSGalileoAndBeiDouSignalUsedMask& operator=(
+        const BESTPOSGalileoAndBeiDouSignalUsedMask&) noexcept = default;
+    BESTPOSGalileoAndBeiDouSignalUsedMask(
+        BESTPOSGalileoAndBeiDouSignalUsedMask&&) noexcept = default;
+    BESTPOSGalileoAndBeiDouSignalUsedMask& operator=(
+        BESTPOSGalileoAndBeiDouSignalUsedMask&&) noexcept = default;
+    BESTPOSGalileoAndBeiDouSignalUsedMask& operator=(
+        const UChar& value) noexcept {
+        this->value = value;
+        return *this;
+    }
+    BESTPOSGalileoAndBeiDouSignalUsedMask& operator=(
+        const UChar&& value) noexcept {
+        this->value = value;
+        return *this;
+    }
+    operator const UChar() noexcept { return this->value; }
+};
+
+class BESTSATSSignalMask {
+   public:
+    enum class BIT_GPS : UChar { GPSL1 = 0, GPSL2, GPSL5 };
+
+    enum class BIT_GLONASS : UChar {
+        GLONASSL1 = 0,
+        GLONASSL2,
+    };
+
+    enum class BIT_Galileo : UChar { GalileoE1 = 0 };
+
+    enum class BIT_BeiDou : UChar {
+        BeiDouB1 = 0,
+        BeiDouB2,
+    };
+
+   private:
+    ULong value;
+
+   public:
+    BESTSATSSignalMask() {}
+    BESTSATSSignalMask(const ULong& value) noexcept : value(value) {}
+    BESTSATSSignalMask(const ULong&& value) noexcept : value(value) {}
+    BESTSATSSignalMask(const BESTSATSSignalMask&) noexcept = default;
+    BESTSATSSignalMask& operator=(const BESTSATSSignalMask&) noexcept = default;
+    BESTSATSSignalMask(BESTSATSSignalMask&&) noexcept = default;
+    BESTSATSSignalMask& operator=(BESTSATSSignalMask&&) noexcept = default;
+    BESTSATSSignalMask& operator=(const ULong& value) noexcept {
+        this->value = value;
+        return *this;
+    }
+    BESTSATSSignalMask& operator=(const ULong&& value) noexcept {
+        this->value = value;
+        return *this;
+    }
+    operator const ULong() noexcept { return this->value; }
+};
+
+class IMUStatus {
+   public:
+    enum class BIT_iIMUFSAS : ULong {
+        GyroWarmUp = 4,
+        GyroSelfTestActive,
+        GyroStatusBitSet,
+        GyroTimeOutCommandInterface,
+        PowerUpBuiltInTest,
+        Interrupt = 10,
+        WarmUp = 12,
+        InitiatedBuiltInTest = 15,
+        Accelerometer = 18,
+        AccelerometerTimeOut,
+        GyroInitiatedBIT = 21,
+        GyroSelfTest,
+        GyroTimeOut,
+        AnalogToDigital,
+        TestMode,
+        Software,
+        RAM_ROM,
+        Operational = 29,
+        Interface,
+        InterfaceTimeOut
+    };
+
+    enum class BIT_LitefLCI1 : ULong {
+        IBITErrorFlag = 0,
+        CBITErrorFlag,
+        CalibrationStatusFlag,
+        ModeReadFlag = 4,
+        IMUModeIndication1,
+        IMUModeIndication2,
+        IMUModeIndication3,
+        MasterNoGo,
+        IMUNoGo,
+        AccelerometerZNoGo,
+        AccelerometerYNoGo,
+        AccelerometerXNoGo,
+        GyroscopeZNoGo,
+        GyroscopeYNoGo,
+        GyroscopeXNoGo,
+        MasterWarning,
+        IMUWarning,
+        AccelerometerZWarning,
+        AccelerometerYWarning,
+        AccelerometerXWarning,
+        GyroscopeZWarning,
+        GyroscopeYWarning,
+        GyroscopeXWarning
+    };
+
+    enum class Mask_LitefLCI1 : ULong { ModeIndication = 0x0F };
+
+    enum class OffsetBit_LitefLCI1 : Char { ModeIndication = 4 };
+
+    enum class ModeIndication : UChar {
+        PowerOnBIT = 0,
+        StandbyMode = 0x01,
+        InitiatedBIT = 0x06,
+        IBITReady = 0x07,
+        OperationalMode = 0x0D
+    };
+
+    enum class BIT_HG1700 : ULong {
+        IMUStatus4 = 4,
+        IMUStatus5,
+        IMUStatus6,
+        IMUStatus7,
+        IMUStatus27 = 27,
+        IMUStatus28,
+        IMUStatus29,
+        IMUStatus30,
+        IMUStatus31,
+    };
+
+    enum class BIT_LN200 : ULong {
+        IMUStatus0 = 0,
+        IMUStatus1,
+        IMUStatus2,
+        IMUStatus3,
+        IMUStatus4,
+        IMUStatus5,
+        IMUStatus6,
+        IMUStatus7,
+        IMUStatus8,
+        IMUStatus9,
+        IMUStatus10,
+        IMUStatus11,
+        IMUStatus12,
+        IMUStatus13,
+        IMUStatus14,
+        IMUStatus24 = 24,
+        IMUStatus25,
+        IMUStatus26,
+        IMUStatus27,
+        IMUStatus28,
+        IMUStatus30 = 30,
+    };
+
+    enum class BIT_ISA100 : ULong {
+        MaintenanceIndication = 0,
+        AccelerometersInvalid,
+        AccelerometerXWarning,
+        AccelerometerYWarning,
+        AccelerometerZWarning,
+        AccelerometerXNOGO,
+        AccelerometerYNOGO,
+        AccelerometerZNOGO,
+        ResetOccurred,
+        GyroscopesInvalid,
+        GyroscopeXWarning,
+        GyroscopeYWarning,
+        GyroscopeZWarning,
+        GyroscopeXNOGO,
+        GyroscopeYNOGO,
+        GyroscopeZNOGO,
+    };
+
+    enum class Mask_ISA100_100C : ULong { Temperature = 0x0003 };
+
+    enum class OffsetBit_ISA100_100C : ULong { Temperature = 16 };
+
+    constexpr static double ISA100_100CTemperatureScaleRatio = 3.90625e-3;
+
+    enum class CPT : ULong {
+        GyroXStatus = 0,
+        GyroYStatus,
+        GyroZStatus,
+        AccelerometerXStatus = 4,
+        AccelerometerYStatus,
+        AccelerometerZStatus,
+    };
+
+    enum class Mask_CPT : ULong { DataSequenceCounter = 0x03 };
+
+    enum class OffsetBit_CPT : ULong { DataSequenceCounter = 8 };
+
+    enum class BIT_KVH1750_1725 : ULong {
+        GyroXStatus = 0,
+        GyroYStatus,
+        GyroZStatus,
+        AccelerometerXStatus = 4,
+        AccelerometerYStatus,
+        AccelerometerZStatus,
+    };
+
+    enum class Mask_KVH1750_1725 : ULong {
+        DataSequenceCounter = 0x3,
+        Temperature = 0x0003
+    };
+
+    enum class OffsetBit_KVH1750_1725 : ULong {
+        DataSequenceCounter = 8,
+        Temperature = 16
+    };
+
+    enum class BIT_HG1900_1930 : ULong {
+        IMUStatus4 = 4,
+        IMUStatus5,
+        IMUStatus6,
+        IMUStatus7,
+        IMUStatus24 = 24,
+        IMUStatus26 = 26,
+        IMUStatus27,
+        IMUStatus28,
+        IMUStatus29,
+        IMUStatus30,
+    };
+
+    enum class BIT_ADIS16488_IGMA1 : ULong {
+        AlarmStatusFlag = 0,
+        SPICommunicationError = 3,
+        SensorOverRange,
+        InitialSelfTestFailure,
+        FlashMemoryFailure,
+        ProcessingOverrun,
+        SelfTestFailure_XAxisGyro,
+        SelfTestFailure_YAxisGyro,
+        SelfTestFailure_ZAxisGyro,
+        SelfTestFailure_XAxisAccelerometer,
+        SelfTestFailure_YAxisAccelerometer,
+        SelfTestFailure_ZAxisAccelerometer
+    };
+
+    enum class Mask_ADIS16488_IGMA1 : ULong { Temperature = 0x0003 };
+
+    enum class OffsetBit_ADIS16488_IGMA1 : ULong { Temperature = 16 };
+
+    constexpr static double ADIS16488_IGMA1TemperatureScaleRatio = 0.00565;
+    constexpr static double ADIS16488_IGMA1TemperatureOffset = 25;
+
+    enum class Mask_STIM300_IGMS1 : ULong {
+        GyroStatus = 0xFF,
+        Temperature = 0x00030000,
+        AccelerometerStatus = 0xFF00
+    };
+    enum class OffsetBit_STIM300_IGMS1 : ULong {
+        GyroStatus = 0,
+        AccelerometerStatus = 8,
+        Temperature = 16
+    };
+
+    enum class BIT_STIM300_Status : ULong {
+        XChannel = 0,
+        YChannel,
+        ZChannel,
+        ErrorInMeasurementChannel,
+        Overload,
+        OutsideOperatingConditions,
+        Startup,
+        SystemIntegrityError
+    };
+
+    constexpr static double STIM300_IGMS1TemperatureScaleRatio =
+        1 / (double)(2UL << 8);
+
+    enum class BIT_uIMU : ULong {
+        ResetAcknowledged = 0,
+        GyrosNotInitialized,
+        GyroXWarning,
+        GyroYWarning,
+        GyroZWarning,
+        GyroXNOGO,
+        GyroYNOGO,
+        GyroZNOGO,
+        AccelsNotInitialized = 9,
+        AccelXWarning,
+        AccelYWarning,
+        AccelZWarning,
+        AccelXNOGO,
+        AccelYNOGO,
+        AccelZNOGO,
+    };
+
+    enum class Mask_uIMU : ULong { Temperature = 0x0003 };
+
+    enum class OffsetBit_uIMU : ULong { Temperature = 16 };
+
+    constexpr static double uIMUTemperatureScaleRatio = 3.90625e-3;
+
+   private:
+    ULong value;
+
+   public:
+    IMUStatus() {}
+    IMUStatus(const ULong& value) noexcept : value(value) {}
+    IMUStatus(const ULong&& value) noexcept : value(value) {}
+    IMUStatus(const IMUStatus&) noexcept = default;
+    IMUStatus& operator=(const IMUStatus&) noexcept = default;
+    IMUStatus(IMUStatus&&) noexcept = default;
+    IMUStatus& operator=(IMUStatus&&) noexcept = default;
+    IMUStatus& operator=(const ULong& value) noexcept {
+        this->value = value;
+        return *this;
+    }
+    IMUStatus& operator=(const ULong&& value) noexcept {
+        this->value = value;
+        return *this;
+    }
+    operator const ULong() noexcept { return this->value; }
+};
+
+DECLARE_ENUM_WITH_TYPE(IMUError, UChar, Okay = 0x00, Error)
+
 DECLARE_ENUM_WITH_TYPE(IMUType, UChar, IMU_UNKNOWN = 0, IMU_HG1700_AG11,
                        IMU_HG1700_AG17 = 4, IMU_HG1900_CA29, IMU_LN200 = 8,
                        IMU_HG1700_AG58 = 11, IMU_HG1700_AG62, IMU_IMAR_FSAS,
@@ -354,14 +950,6 @@ DECLARE_ENUM_WITH_TYPE(IMUType, UChar, IMU_UNKNOWN = 0, IMU_HG1700_AG11,
                        IMU_ADIS16488 = 31, IMU_STIM300, IMU_KVH_1750,
                        IMU_ISA100, IMU_ISA100_400HZ = 38, IMU_ISA100C_400HZ,
                        IMU_KVH_1725 = 45, IMU_LITEF_MICROIMU = 52)
-
-DECLARE_ENUM_WITH_TYPE(WheelStatus, ULong, INACTIVE = 0, ACTIVE, USED, UNSYNCED,
-                       BAS_MISC, HIGH_ROTATION)
-
-DECLARE_ENUM_WITH_TYPE(HeadingUpdateValues, ULong, INACTIVE = 0, ACTIVE, USED)
-
-// TODO: Define enum value here
-// DECLARE_ENUM_WITH_TYPE(EnumType, ValueType, Value ...)
 
 template <typename T>
 inline void toggleEndian(const T* msg) {
