@@ -8,21 +8,21 @@
 #include "SPANHeader.h"
 #include "SPANType.h"
 namespace SPAN {
-
 #define DEFINE_COMMA ,
 #define DEFINE_SPAN_MESSAGE_ALIAS(                                            \
     TSZ, T, ALIAS_T, VAR, FROM_BIN_WITHOUT_HEADER, FROM_ASCII_WITHOUT_HEADER, \
     TOGGLE_ENDIAN, ...)                                                       \
+    ALIGN_REGION(1)                                                           \
     struct T;                                                                 \
     typedef struct T ALIAS_T;                                                 \
-    typedef struct ALIGN(1) T {                                               \
+    struct ALIGN(1) T {                                                       \
         Header header;                                                        \
         VAR;                                                                  \
-        static bool fromBinWithoutHeader(const std::string& str, T& __t) {    \
+        static bool fromBinWithoutHeader(const std::string &str, T &__t) {    \
             FROM_BIN_WITHOUT_HEADER                                           \
         }                                                                     \
         static bool fromAsciiWithoutHeader(                                   \
-            const std::vector<std::string>& str, T& __t) {                    \
+            const std::vector<std::string> &str, T &__t) {                    \
             try {                                                             \
                 FROM_ASCII_WITHOUT_HEADER                                     \
             } catch (...) {                                                   \
@@ -30,8 +30,9 @@ namespace SPAN {
             }                                                                 \
         }                                                                     \
         void toggleEndian(){TOGGLE_ENDIAN} __VA_ARGS__                        \
-    } ALIAS_T;                                                                \
-    static_assert(sizeof(T) - sizeof(Header) == TSZ, "size error");
+    };                                                                        \
+    static_assert(sizeof(T) - sizeof(Header) == TSZ, "size error");           \
+    ALIGN_ENDREGION
 
 #define DEFINE_SPAN_MESSAGE(TSZ, T, VAR, FROM_BIN_WITHOUT_HEADER,          \
                             FROM_ASCII_WITHOUT_HEADER, TOGGLE_ENDIAN, ...) \
@@ -39,36 +40,42 @@ namespace SPAN {
                               FROM_ASCII_WITHOUT_HEADER, TOGGLE_ENDIAN,    \
                               __VA_ARGS__)
 
-#define DEFINE_SPAN_MESSAGE_WITH_SHORT_ALIAS(                                 \
-    TSZ, T, ALIAS_T, VAR, FROM_BIN_WITHOUT_HEADER, FROM_ASCII_WITHOUT_HEADER, \
-    TOGGLE_ENDIAN, ...)                                                       \
-    typedef struct ALIGN(1) T {                                               \
-        Header header;                                                        \
-        VAR;                                                                  \
-        static bool fromBinWithoutHeader(const std::string& str, T& __t) {    \
-            FROM_BIN_WITHOUT_HEADER                                           \
-        }                                                                     \
-        static bool fromAsciiWithoutHeader(                                   \
-            const std::vector<std::string>& str, T& __t) {                    \
-            FROM_ASCII_WITHOUT_HEADER                                         \
-        }                                                                     \
-        void toggleEndian(){TOGGLE_ENDIAN} __VA_ARGS__                        \
-    } T;                                                                      \
-    typedef struct ALIGN(1) ALIAS_T {                                         \
-        ShortHeader header;                                                   \
-        VAR;                                                                  \
-        static bool fromBinWithoutHeader(const std::string& str,              \
-                                         ALIAS_T& __t) {                      \
-            FROM_BIN_WITHOUT_HEADER                                           \
-        }                                                                     \
-        static bool fromAsciiWithoutHeader(                                   \
-            const std::vector<std::string>& str, ALIAS_T& __t) {              \
-            FROM_ASCII_WITHOUT_HEADER                                         \
-        }                                                                     \
-        void toggleEndian(){TOGGLE_ENDIAN} __VA_ARGS__                        \
-    } ALIAS_T;                                                                \
-    static_assert(sizeof(T) - sizeof(Header) == TSZ, "size error");           \
-    static_assert(sizeof(ALIAS_T) - sizeof(ShortHeader) == TSZ, "size error");
+#define DEFINE_SPAN_MESSAGE_WITH_SHORT_ALIAS(                                  \
+    TSZ, T, ALIAS_T, VAR, FROM_BIN_WITHOUT_HEADER, FROM_ASCII_WITHOUT_HEADER,  \
+    TOGGLE_ENDIAN, ...)                                                        \
+    ALIGN_REGION(1)                                                            \
+    struct T;                                                                  \
+    typedef struct T T;                                                        \
+    struct ALIAS_T;                                                            \
+    typedef struct ALIAS_T ALIAS_T;                                            \
+    struct ALIGN(1) T {                                                        \
+        Header header;                                                         \
+        VAR;                                                                   \
+        static bool fromBinWithoutHeader(const std::string &str, T &__t) {     \
+            FROM_BIN_WITHOUT_HEADER                                            \
+        }                                                                      \
+        static bool fromAsciiWithoutHeader(                                    \
+            const std::vector<std::string> &str, T &__t) {                     \
+            FROM_ASCII_WITHOUT_HEADER                                          \
+        }                                                                      \
+        void toggleEndian(){TOGGLE_ENDIAN} __VA_ARGS__                         \
+    };                                                                         \
+    typedef struct ALIGN(1) ALIAS_T {                                          \
+        ShortHeader header;                                                    \
+        VAR;                                                                   \
+        static bool fromBinWithoutHeader(const std::string &str,               \
+                                         ALIAS_T &__t) {                       \
+            FROM_BIN_WITHOUT_HEADER                                            \
+        }                                                                      \
+        static bool fromAsciiWithoutHeader(                                    \
+            const std::vector<std::string> &str, ALIAS_T &__t) {               \
+            FROM_ASCII_WITHOUT_HEADER                                          \
+        }                                                                      \
+        void toggleEndian(){TOGGLE_ENDIAN} __VA_ARGS__                         \
+    } ALIAS_T;                                                                 \
+    static_assert(sizeof(T) - sizeof(Header) == TSZ, "size error");            \
+    static_assert(sizeof(ALIAS_T) - sizeof(ShortHeader) == TSZ, "size error"); \
+    ALIGN_ENDREGION
 
 #define DEFINE_SPAN_MESSAGE_WITH_SHORT(TSZ, T, VAR, FROM_BIN_WITHOUT_HEADER,   \
                                        FROM_ASCII_WITHOUT_HEADER,              \
@@ -88,9 +95,7 @@ DEFINE_SPAN_MESSAGE(44, TIME, ClockModelStatus clock_status; Double offset;
                         memcpy(&__t.clock_status DEFINE_COMMA str.data()
                                     DEFINE_COMMA sizeof(__t) -
                                sizeof(__t.header));
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-                        __t.toggleEndian();
-#endif
+                        DEFINE_MARCO_SPAN_MESSAGE_TOGGLE(__t)
                         return true;
                     },
                     {
@@ -134,9 +139,7 @@ DEFINE_SPAN_MESSAGE_ALIAS(
         if (str.size() < sizeof(__t) - sizeof(__t.header)) return false;
         memcpy(&__t.sol_stat DEFINE_COMMA str.data() DEFINE_COMMA sizeof(__t) -
                sizeof(__t.header));
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-        __t.toggleEndian();
-#endif
+        DEFINE_MARCO_SPAN_MESSAGE_TOGGLE(__t)
         return true;
     },
     {
@@ -195,9 +198,7 @@ DEFINE_SPAN_MESSAGE(44, BESTVEL, SolutionStatus sol_status;
                         memcpy(&__t.sol_status DEFINE_COMMA str.data()
                                     DEFINE_COMMA sizeof(__t) -
                                sizeof(__t.header));
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-                        __t.toggleEndian();
-#endif
+                        DEFINE_MARCO_SPAN_MESSAGE_TOGGLE(__t)
                         return true;
                     },
                     {
@@ -233,9 +234,7 @@ DEFINE_SPAN_MESSAGE_WITH_SHORT(
         if (str.size() < sizeof(__t) - sizeof(__t.header)) return false;
         memcpy(&__t.week DEFINE_COMMA str.data() DEFINE_COMMA sizeof(__t) -
                sizeof(__t.header));
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-        __t.toggleEndian();
-#endif
+        DEFINE_MARCO_SPAN_MESSAGE_TOGGLE(__t)
         return true;
     },
     {
@@ -269,9 +268,7 @@ DEFINE_SPAN_MESSAGE_WITH_SHORT(
         if (str.size() < sizeof(__t) - sizeof(__t.header)) return false;
         memcpy(&__t.week DEFINE_COMMA str.data() DEFINE_COMMA sizeof(__t) -
                sizeof(__t.header));
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-        __t.toggleEndian();
-#endif
+        DEFINE_MARCO_SPAN_MESSAGE_TOGGLE(__t)
         return true;
     },
     {
@@ -315,9 +312,7 @@ DEFINE_SPAN_MESSAGE_WITH_SHORT(
         if (str.size() < sizeof(__t) - sizeof(__t.header)) return false;
         memcpy(&__t.week DEFINE_COMMA str.data() DEFINE_COMMA sizeof(__t) -
                sizeof(__t.header));
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-        __t.toggleEndian();
-#endif
+        DEFINE_MARCO_SPAN_MESSAGE_TOGGLE(__t)
         return true;
     },
     {
@@ -350,9 +345,7 @@ DEFINE_SPAN_MESSAGE_WITH_SHORT(
         if (str.size() < sizeof(__t) - sizeof(__t.header)) return false;
         memcpy(&__t.week DEFINE_COMMA str.data() DEFINE_COMMA sizeof(__t) -
                sizeof(__t.header));
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-        __t.toggleEndian();
-#endif
+        DEFINE_MARCO_SPAN_MESSAGE_TOGGLE(__t)
         return true;
     },
     {
@@ -384,9 +377,7 @@ DEFINE_SPAN_MESSAGE_WITH_SHORT(
         if (str.size() < sizeof(__t) - sizeof(__t.header)) return false;
         memcpy(&__t.week DEFINE_COMMA str.data() DEFINE_COMMA sizeof(__t) -
                sizeof(__t.header));
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-        __t.toggleEndian();
-#endif
+        DEFINE_MARCO_SPAN_MESSAGE_TOGGLE(__t)
         return true;
     },
     {
@@ -419,9 +410,7 @@ DEFINE_SPAN_MESSAGE_WITH_SHORT(
         if (str.size() < sizeof(__t) - sizeof(__t.header)) return false;
         memcpy(&__t.week DEFINE_COMMA str.data() DEFINE_COMMA sizeof(__t) -
                sizeof(__t.header));
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-        __t.toggleEndian();
-#endif
+        DEFINE_MARCO_SPAN_MESSAGE_TOGGLE(__t)
         return true;
     },
     {
@@ -447,26 +436,25 @@ DEFINE_SPAN_MESSAGE_WITH_SHORT(
         }
     })
 
-typedef struct BESTSATS_entry {
+struct BESTSATS_entry;
+typedef struct BESTSATS_entry BESTSATS_entry;
+struct BESTSATS_entry {
     SatelliteSystem system;
     ULong satellite_id;
     ObservationStatuses status;
     BESTSATSSignalMask signal_mask;
 
-    static bool fromBin(const std::string& str, BESTSATS_entry& __t) {
+    static bool fromBin(const std::string &str, BESTSATS_entry &__t) {
         if (str.size() < sizeof(BESTSATS_entry)) {
             return false;
         }
         memcpy(&__t, str.data(), sizeof(BESTSATS_entry));
-
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-        SPAN::toggleEndian(&__t.entries_num);
-#endif
+        DEFINE_MARCO_SPAN_MESSAGE_TOGGLE(__t)
         return true;
     }
 
-    static bool fromAscii(const std::vector<std::string>& str,
-                          BESTSATS_entry& __t) {
+    static bool fromAscii(const std::vector<std::string> &str,
+                          BESTSATS_entry &__t) {
         if (str.size() < 4) {
             return false;
         }
@@ -489,8 +477,7 @@ typedef struct BESTSATS_entry {
         TOGGLE_SPAN_ENDIAN(status);
         TOGGLE_SPAN_ENDIAN(signal_mask);
     }
-
-} BESTSATS_entry;
+};
 
 DEFINE_SPAN_MESSAGE(
     4 + sizeof(std::vector<BESTSATS_entry>), BESTSATS, ULong entries_num;
@@ -498,20 +485,16 @@ DEFINE_SPAN_MESSAGE(
     ,
     {
         if (str.size() < sizeof(ULong)) return false;
-        __t.entries_num = *(ULong*)&str[0];
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-        SPAN::toggleEndian(&__t.entries_num);
-#endif
+        __t.entries_num = *(ULong *)&str[0];
+        TOGGLE_SPAN_ENDIAN(__t.entries_num);
         if ((str.size() - sizeof(ULong)) % sizeof(BESTSATS_entry)) {
             return false;
         }
         BESTSATS_entry entry;
-        for (int i = 0; i < __t.entries_num; ++i) {
+        for (ULong i = 0; i < __t.entries_num; ++i) {
             memcpy(&entry DEFINE_COMMA str.data() + i * sizeof(BESTSATS_entry) +
                    1 DEFINE_COMMA sizeof(entry));
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-            entry.toggleEndian();
-#endif
+            DEFINE_MARCO_SPAN_MESSAGE_TOGGLE(entry)
             __t.entries.push_back(entry);
         }
         return true;
@@ -524,7 +507,7 @@ DEFINE_SPAN_MESSAGE(
             return false;
         }
         __t.entries_num = StoUL(str[0]);
-        for (int i = 0; i < __t.entries_num; ++i) {
+        for (ULong i = 0; i < __t.entries_num; ++i) {
             BESTSATS_entry entry;
             entry.system = SatelliteSystemFromName(str[1 + (i << 2)]);
             size_t index = str[1].npos;
@@ -542,7 +525,7 @@ DEFINE_SPAN_MESSAGE(
     },
     {
         TOGGLE_SPAN_ENDIAN(entries_num);
-        for (auto& entry : entries) {
+        for (auto &entry : entries) {
             entry.toggleEndian();
         }
     })
@@ -564,9 +547,7 @@ DEFINE_SPAN_MESSAGE(126, INSPVAX, InertialSolutionStatus INS_status;
                         memcpy(&__t.INS_status DEFINE_COMMA str.data()
                                     DEFINE_COMMA sizeof(__t) -
                                sizeof(__t.header));
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-                        __t.toggleEndian();
-#endif
+                        DEFINE_MARCO_SPAN_MESSAGE_TOGGLE(__t)
                         return true;
                     },
                     {
@@ -633,9 +614,7 @@ DEFINE_SPAN_MESSAGE_WITH_SHORT(
         if (str.size() < sizeof(__t) - sizeof(__t.header)) return false;
         memcpy(&__t.week DEFINE_COMMA str.data() DEFINE_COMMA sizeof(__t) -
                sizeof(__t.header));
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-        __t.toggleEndian();
-#endif
+        DEFINE_MARCO_SPAN_MESSAGE_TOGGLE(__t)
         return true;
     },
     {
@@ -665,8 +644,8 @@ DEFINE_SPAN_MESSAGE_WITH_SHORT(
         TOGGLE_SPAN_ENDIAN(_Y_gyro);
         TOGGLE_SPAN_ENDIAN(X_gyro);
     },
-    static void GetScaleFactors(SPAN::IMUType imu_type, long double& gyroScale,
-                                long double& accelScale) {
+    static void GetScaleFactors(SPAN::IMUType imu_type, long double &gyroScale,
+                                long double &accelScale) {
         accelScale = 1;
         gyroScale = 1;
         switch (imu_type) {
@@ -733,9 +712,7 @@ DEFINE_SPAN_MESSAGE_WITH_SHORT_ALIAS(
         if (str.size() < sizeof(__t) - sizeof(__t.header)) return false;
         memcpy(&__t.IMU_error DEFINE_COMMA str.data() DEFINE_COMMA sizeof(__t) -
                sizeof(__t.header));
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-        __t.toggleEndian();
-#endif
+        DEFINE_MARCO_SPAN_MESSAGE_TOGGLE(__t)
         return true;
     },
     {
@@ -769,8 +746,8 @@ DEFINE_SPAN_MESSAGE_WITH_SHORT_ALIAS(
         TOGGLE_SPAN_ENDIAN(X_gyro);
     },
 
-    static void GetScaleFactors(SPAN::IMUType imu_type, long double& gyroScale,
-                                long double& accelScale) {
+    static void GetScaleFactors(SPAN::IMUType imu_type, long double &gyroScale,
+                                long double &accelScale) {
         RAWIMU::GetScaleFactors(imu_type, gyroScale, accelScale);
     })
 
@@ -784,9 +761,7 @@ DEFINE_SPAN_MESSAGE_WITH_SHORT_ALIAS(
                               memcpy(&__t.ticks_per_rev DEFINE_COMMA str.data()
                                           DEFINE_COMMA sizeof(__t) -
                                      sizeof(__t.header));
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-                              __t.toggleEndian();
-#endif
+                              DEFINE_MARCO_SPAN_MESSAGE_TOGGLE(__t)
                               return true;
                           },
                           {
@@ -821,9 +796,7 @@ DEFINE_SPAN_MESSAGE(28, INSUPDATE, PositionOrVelocityType solution_type;
                         memcpy(&__t.solution_type DEFINE_COMMA str.data()
                                     DEFINE_COMMA sizeof(__t) -
                                sizeof(__t.header));
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-                        __t.toggleEndian();
-#endif
+                        DEFINE_MARCO_SPAN_MESSAGE_TOGGLE(__t)
                         return true;
                     },
                     {
@@ -859,11 +832,11 @@ DEFINE_SPAN_MESSAGE(28, INSUPDATE, PositionOrVelocityType solution_type;
 
 inline bool ConstructASCIIWithoutHeader(MessageID id,
                                         std::vector<std::string> data,
-                                        void* var) {
-#define ASCII_CASE(ID)                                                   \
-    case MessageID::ID: {                                                \
-        ID::fromAsciiWithoutHeader(data, *(reinterpret_cast<ID*>(var))); \
-        break;                                                           \
+                                        void *var) {
+#define ASCII_CASE(ID)                                                    \
+    case MessageID::ID: {                                                 \
+        ID::fromAsciiWithoutHeader(data, *(reinterpret_cast<ID *>(var))); \
+        break;                                                            \
     }
     switch (id) {
         ASCII_CASE(BESTPOS)
@@ -898,10 +871,10 @@ inline bool ConstructASCIIWithoutHeader(MessageID id,
 }
 
 inline bool ConstructBINWithoutHeader(MessageID id, std::string data,
-                                      void* var) {
-#define BIN_CASE(ID)                                                   \
-    case MessageID::ID: {                                              \
-        ID::fromBinWithoutHeader(data, *(reinterpret_cast<ID*>(var))); \
+                                      void *var) {
+#define BIN_CASE(ID)                                                    \
+    case MessageID::ID: {                                               \
+        ID::fromBinWithoutHeader(data, *(reinterpret_cast<ID *>(var))); \
     } break;
     switch (id) {
         BIN_CASE(BESTPOS)

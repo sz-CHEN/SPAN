@@ -1,17 +1,29 @@
 // Define type described in Firmware Reference Manual
 #ifndef SPAN_TYPE_H
 #define SPAN_TYPE_H
+#ifdef _WIN32
+#include <Windows.h>
+#endif
 #include <cstdint>
 #include "MapedEnumName.hpp"
 namespace SPAN {
 #ifdef __GNUC__
 #define ALIGN(x) __attribute__((packed, aligned(x)))
-#define ALIGN_REGION(x)
-#define ALIGN_ENDREGION
+#define DO_Pragma(x) _Pragma(#x)
+#define ALIGN_REGION(x) DO_Pragma(pack(x))
+#define ALIGN_ENDREGION _Pragma("pack()")
 #elif defined(_MSC_VER)
 #define ALIGN(x)
-#define ALIGN_REGION(x) pack(x)
-#define ALIGN_ENDREGION pack()
+#define ALIGN_REGION(x) __pragma(pack(x))
+#define ALIGN_ENDREGION __pragma(pack())
+#endif
+
+#if (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) || \
+    (REG_DWORD == REG_DWORD_BIG_ENDIAN)
+#define DEFINE_MARCO_SPAN_MESSAGE_TOGGLE(x) \
+    { x.toggleEndian(); }
+#else
+#define DEFINE_MARCO_SPAN_MESSAGE_TOGGLE(x)
 #endif
 
 static_assert(std::numeric_limits<double>::is_iec559 &&
@@ -961,9 +973,9 @@ inline void toggleEndian(const T* msg) {
 
 #define TOGGLE_SPAN_ENDIAN(x)    \
     {                            \
-        auto tx = this->x;       \
+        auto tx = x;       \
         SPAN::toggleEndian(&tx); \
-        this->x = tx;            \
+        x = tx;            \
     }
 }  // namespace SPAN
 #endif
