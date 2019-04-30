@@ -103,15 +103,15 @@ DEFINE_SPAN_MESSAGE(44, TIME, ClockModelStatus clock_status; Double offset;
                             return false;
                         }
                         __t.clock_status = ClockModelStatusFromName(str[0]);
-                        __t.offset = StoD(str[1]);
-                        __t.offset_std = StoD(str[2]);
-                        __t.utc_offset = StoD(str[3]);
-                        __t.utc_year = StoUL(str[4]);
-                        __t.utc_month = StoUC(str[5]);
-                        __t.utc_day = StoUC(str[6]);
-                        __t.utc_hour = StoUC(str[7]);
-                        __t.utc_min = StoUC(str[8]);
-                        __t.utc_ms = StoUL(str[9]);
+                        __t.offset = stoD(str[1]);
+                        __t.offset_std = stoD(str[2]);
+                        __t.utc_offset = stoD(str[3]);
+                        __t.utc_year = stoUL(str[4]);
+                        __t.utc_month = stoUC(str[5]);
+                        __t.utc_day = stoUC(str[6]);
+                        __t.utc_hour = stoUC(str[7]);
+                        __t.utc_min = stoUC(str[8]);
+                        __t.utc_ms = stoUL(str[9]);
                         __t.utc_status = UTCStatusFromName(str[10]);
                         return true;
                     },
@@ -148,28 +148,28 @@ DEFINE_SPAN_MESSAGE_ALIAS(
         }
         __t.sol_stat = SolutionStatusFromName(str[0]);
         __t.pos_type = PositionOrVelocityTypeFromName(str[1]);
-        __t.lat = StoD(str[2]);
-        __t.lon = StoD(str[3]);
-        __t.hgt = StoD(str[4]);
-        __t.undulation = StoF(str[5]);
+        __t.lat = stoD(str[2]);
+        __t.lon = stoD(str[3]);
+        __t.hgt = stoD(str[4]);
+        __t.undulation = stoF(str[5]);
         __t.datum_ID = DatumTransfomationParamsFromName(str[6]);
-        __t.lat_delta = StoF(str[7]);
-        __t.lon_delta = StoF(str[8]);
-        __t.hgt_delta = StoF(str[9]);
+        __t.lat_delta = stoF(str[7]);
+        __t.lon_delta = stoF(str[8]);
+        __t.hgt_delta = stoF(str[9]);
         std::string s(str[10].begin() + 1, str[10].end() - 1);
-        for (int i = 0; i < s.size() && i < 4; ++i) {
+        for (std::size_t i = 0; i < s.size() && i < 4; ++i) {
             __t.stn_id[i] = s[i];
         }
-        __t.diff_age = StoF(str[11]);
-        __t.sol_age = StoF(str[12]);
-        __t.SVs = StoUC(str[13]);
-        __t.soln_SVs = StoUC(str[14]);
-        __t.soln_L1_SVs = StoUC(str[15]);
-        __t.soln_multi_Svs = StoUC(str[16]);
-        __t.reserved = StoUC(str[17]);
-        __t.ext_sol_stat = StoUC(str[18], 0, 16);
-        __t.Galileo_BeiDou_sig_mask = StoUC(str[19], 0, 16);
-        __t.GPS_GLONASS_sig_mask = StoUC(str[20], 0, 16);
+        __t.diff_age = stoF(str[11]);
+        __t.sol_age = stoF(str[12]);
+        __t.SVs = stoUC(str[13]);
+        __t.soln_SVs = stoUC(str[14]);
+        __t.soln_L1_SVs = stoUC(str[15]);
+        __t.soln_multi_Svs = stoUC(str[16]);
+        __t.reserved = stoUC(str[17]);
+        __t.ext_sol_stat = stoUC(str[18], 0, 16);
+        __t.Galileo_BeiDou_sig_mask = stoUC(str[19], 0, 16);
+        __t.GPS_GLONASS_sig_mask = stoUC(str[20], 0, 16);
         return true;
     },
     {
@@ -207,12 +207,12 @@ DEFINE_SPAN_MESSAGE(44, BESTVEL, SolutionStatus sol_status;
                         }
                         __t.sol_status = SolutionStatusFromName(str[0]);
                         __t.vel_type = PositionOrVelocityTypeFromName(str[1]);
-                        __t.latency = StoF(str[2]);
-                        __t.age = StoF(str[3]);
-                        __t.hor_spd = StoD(str[4]);
-                        __t.trk_gnd = StoD(str[5]);
-                        __t.vert_spd = StoD(str[6]);
-                        __t.reserved = StoF(str[7]);
+                        __t.latency = stoF(str[2]);
+                        __t.age = stoF(str[3]);
+                        __t.hor_spd = stoD(str[4]);
+                        __t.trk_gnd = stoD(str[5]);
+                        __t.vert_spd = stoD(str[6]);
+                        __t.reserved = stoF(str[7]);
                         return true;
                     },
                     {
@@ -241,11 +241,11 @@ DEFINE_SPAN_MESSAGE_WITH_SHORT(
         if (str.size() < 6) {
             return false;
         }
-        __t.week = StoUL(str[0]);
-        __t.seconds_into_week = StoD(str[1]);
-        __t.latitude = StoD(str[2]);
-        __t.longitude = StoD(str[3]);
-        __t.height = StoD(str[4]);
+        __t.week = stoUL(str[0]);
+        __t.seconds_into_week = stoD(str[1]);
+        __t.latitude = stoD(str[2]);
+        __t.longitude = stoD(str[3]);
+        __t.height = stoD(str[4]);
         __t.status = InertialSolutionStatusFromName(str[5]);
         return true;
     },
@@ -275,17 +275,17 @@ DEFINE_SPAN_MESSAGE_WITH_SHORT(
         if (str.size() < 12) {
             return false;
         }
-        __t.week = StoUL(str[0]);
-        __t.seconds = StoD(str[1]);
-        __t.latitude = StoD(str[2]);
-        __t.longitude = StoD(str[3]);
-        __t.height = StoD(str[4]);
-        __t.north_velocity = StoD(str[5]);
-        __t.east_velocity = StoD(str[6]);
-        __t.up_velocity = StoD(str[7]);
-        __t.roll = StoD(str[8]);
-        __t.pitch = StoD(str[9]);
-        __t.azimuth = StoD(str[10]);
+        __t.week = stoUL(str[0]);
+        __t.seconds = stoD(str[1]);
+        __t.latitude = stoD(str[2]);
+        __t.longitude = stoD(str[3]);
+        __t.height = stoD(str[4]);
+        __t.north_velocity = stoD(str[5]);
+        __t.east_velocity = stoD(str[6]);
+        __t.up_velocity = stoD(str[7]);
+        __t.roll = stoD(str[8]);
+        __t.pitch = stoD(str[9]);
+        __t.azimuth = stoD(str[10]);
         __t.status = InertialSolutionStatusFromName(str[11]);
         return true;
     },
@@ -319,11 +319,11 @@ DEFINE_SPAN_MESSAGE_WITH_SHORT(
         if (str.size() < 6) {
             return false;
         }
-        __t.week = StoUL(str[0]);
-        __t.seconds_into_week = StoD(str[1]);
-        __t.north_velocity = StoD(str[2]);
-        __t.east_velocity = StoD(str[3]);
-        __t.up_velocity = StoD(str[4]);
+        __t.week = stoUL(str[0]);
+        __t.seconds_into_week = stoD(str[1]);
+        __t.north_velocity = stoD(str[2]);
+        __t.east_velocity = stoD(str[3]);
+        __t.up_velocity = stoD(str[4]);
         __t.status = InertialSolutionStatusFromName(str[5]);
         return true;
     },
@@ -352,11 +352,11 @@ DEFINE_SPAN_MESSAGE_WITH_SHORT(
         if (str.size() < 6) {
             return false;
         }
-        __t.week = StoUL(str[0]);
-        __t.seconds_into_week = StoD(str[1]);
-        __t.trk_gnd = StoD(str[2]);
-        __t.horizontal_speed = StoD(str[3]);
-        __t.vertical_speed = StoD(str[4]);
+        __t.week = stoUL(str[0]);
+        __t.seconds_into_week = stoD(str[1]);
+        __t.trk_gnd = stoD(str[2]);
+        __t.horizontal_speed = stoD(str[3]);
+        __t.vertical_speed = stoD(str[4]);
         __t.status = InertialSolutionStatusFromName(str[5]);
         return true;
     },
@@ -384,11 +384,11 @@ DEFINE_SPAN_MESSAGE_WITH_SHORT(
         if (str.size() < 6) {
             return false;
         }
-        __t.week = StoUL(str[0]);
-        __t.seconds_into_week = StoD(str[1]);
-        __t.roll = StoD(str[2]);
-        __t.pitch = StoD(str[3]);
-        __t.azimuth = StoD(str[4]);
+        __t.week = stoUL(str[0]);
+        __t.seconds_into_week = stoD(str[1]);
+        __t.roll = stoD(str[2]);
+        __t.pitch = stoD(str[3]);
+        __t.azimuth = stoD(str[4]);
         __t.status = InertialSolutionStatusFromName(str[5]);
         return true;
     },
@@ -417,12 +417,12 @@ DEFINE_SPAN_MESSAGE_WITH_SHORT(
         if (str.size() < 29) {
             return false;
         }
-        __t.week = StoUL(str[0]);
-        __t.seconds_into_week = StoD(str[1]);
+        __t.week = stoUL(str[0]);
+        __t.seconds_into_week = stoD(str[1]);
         for (int i = 0; i < 9; ++i) {
-            __t.position_covariance[i] = StoD(str[i + 2]);
-            __t.attitude_covariance[i] = StoD(str[i + 11]);
-            __t.velocity_covariance[i] = StoD(str[i + 20]);
+            __t.position_covariance[i] = stoD(str[i + 2]);
+            __t.attitude_covariance[i] = stoD(str[i + 11]);
+            __t.velocity_covariance[i] = stoD(str[i + 20]);
         }
         return true;
     },
@@ -461,13 +461,13 @@ struct BESTSATS_entry {
         __t.system = SatelliteSystemFromName(str[0]);
         size_t index = str[1].npos;
         if ((index = str[1].find('-')) != str[1].npos) {
-            __t.satellite_id = StoUS(str[1].substr(0, index)) & 0x03;
-            __t.satellite_id |= (0x03 & StoUS(str[1].substr(index + 1))) << 2;
+            __t.satellite_id = stoUS(str[1].substr(0, index)) & 0x03;
+            __t.satellite_id |= (0x03 & stoUS(str[1].substr(index + 1))) << 2;
         } else {
             __t.satellite_id = std::stoul(str[1]);
         }
         __t.status = ObservationStatusesFromName(str[2]);
-        __t.signal_mask = StoUL(str[3], 0, 16);
+        __t.signal_mask = stoUL(str[3], 0, 16);
         return true;
     }
 
@@ -506,20 +506,20 @@ DEFINE_SPAN_MESSAGE(
         if ((str.size() - 1) % 4) {
             return false;
         }
-        __t.entries_num = StoUL(str[0]);
+        __t.entries_num = stoUL(str[0]);
         for (ULong i = 0; i < __t.entries_num; ++i) {
             BESTSATS_entry entry;
             entry.system = SatelliteSystemFromName(str[1 + (i << 2)]);
             size_t index = str[1].npos;
             if ((index = str[1].find('-')) != str[1].npos) {
-                entry.satellite_id = StoUS(str[1].substr(0, index)) & 0x03;
-                entry.satellite_id |= (0x03 & StoUS(str[1].substr(index + 1)))
+                entry.satellite_id = stoUS(str[1].substr(0, index)) & 0x03;
+                entry.satellite_id |= (0x03 & stoUS(str[1].substr(index + 1)))
                                       << 2;
             } else {
-                entry.satellite_id = StoUL(str[1]);
+                entry.satellite_id = stoUL(str[1]);
             }
             entry.status = ObservationStatusesFromName(str[3 + (i << 2)]);
-            entry.signal_mask = StoUL(str[4 + (i << 2)], 0, 16);
+            entry.signal_mask = stoUL(str[4 + (i << 2)], 0, 16);
         }
         return true;
     },
@@ -556,27 +556,27 @@ DEFINE_SPAN_MESSAGE(126, INSPVAX, InertialSolutionStatus INS_status;
                         }
                         __t.INS_status = InertialSolutionStatusFromName(str[0]);
                         __t.pos_type = PositionOrVelocityTypeFromName(str[1]);
-                        __t.lat = StoD(str[2]);
-                        __t.lon = StoD(str[3]);
-                        __t.height = StoD(str[4]);
-                        __t.undulation = StoF(str[5]);
-                        __t.north_vel = StoD(str[6]);
-                        __t.east_vel = StoD(str[7]);
-                        __t.up_vel = StoD(str[8]);
-                        __t.roll = StoD(str[9]);
-                        __t.pitch = StoD(str[10]);
-                        __t.azimuth = StoD(str[11]);
-                        __t.lat_delta = StoF(str[12]);
-                        __t.lon_delta = StoF(str[13]);
-                        __t.height_delta = StoF(str[14]);
-                        __t.north_vel_delta = StoF(str[15]);
-                        __t.east_vel_delta = StoF(str[16]);
-                        __t.up_vel_delta = StoF(str[17]);
-                        __t.roll_delta = StoF(str[18]);
-                        __t.pitch_delta = StoF(str[19]);
-                        __t.azimuth_delta = StoF(str[20]);
-                        __t.ext_sol_stat = StoUL(str[21], 0, 16);
-                        __t.time_since_update = StoUS(str[22]);
+                        __t.lat = stoD(str[2]);
+                        __t.lon = stoD(str[3]);
+                        __t.height = stoD(str[4]);
+                        __t.undulation = stoF(str[5]);
+                        __t.north_vel = stoD(str[6]);
+                        __t.east_vel = stoD(str[7]);
+                        __t.up_vel = stoD(str[8]);
+                        __t.roll = stoD(str[9]);
+                        __t.pitch = stoD(str[10]);
+                        __t.azimuth = stoD(str[11]);
+                        __t.lat_delta = stoF(str[12]);
+                        __t.lon_delta = stoF(str[13]);
+                        __t.height_delta = stoF(str[14]);
+                        __t.north_vel_delta = stoF(str[15]);
+                        __t.east_vel_delta = stoF(str[16]);
+                        __t.up_vel_delta = stoF(str[17]);
+                        __t.roll_delta = stoF(str[18]);
+                        __t.pitch_delta = stoF(str[19]);
+                        __t.azimuth_delta = stoF(str[20]);
+                        __t.ext_sol_stat = stoUL(str[21], 0, 16);
+                        __t.time_since_update = stoUS(str[22]);
                         return true;
                     },
                     {
@@ -621,15 +621,15 @@ DEFINE_SPAN_MESSAGE_WITH_SHORT(
         if (str.size() < 9) {
             return false;
         }
-        __t.week = StoUL(str[0]);
-        __t.seconds_into_week = StoD(str[1]);
-        __t.IMU_status = StoUL(str[2], 0, 16);
-        __t.Z_accel = StoL(str[3]);
-        __t._Y_accel = StoL(str[4]);
-        __t.X_accel = StoL(str[5]);
-        __t.Z_gyro = StoL(str[6]);
-        __t._Y_gyro = StoL(str[7]);
-        __t.X_gyro = StoL(str[8]);
+        __t.week = stoUL(str[0]);
+        __t.seconds_into_week = stoD(str[1]);
+        __t.IMU_status = stoUL(str[2], 0, 16);
+        __t.Z_accel = stoL(str[3]);
+        __t._Y_accel = stoL(str[4]);
+        __t.X_accel = stoL(str[5]);
+        __t.Z_gyro = stoL(str[6]);
+        __t._Y_gyro = stoL(str[7]);
+        __t.X_gyro = stoL(str[8]);
 
         return true;
     },
@@ -719,17 +719,17 @@ DEFINE_SPAN_MESSAGE_WITH_SHORT_ALIAS(
         if (str.size() < 11) {
             return false;
         }
-        __t.IMU_error = (IMUError)StoUC(str[0], 0, 16);
-        __t.IMU_type = (IMUType)StoUC(str[1]);
-        __t.GNSS_week = StoUS(str[2]);
-        __t.GNSS_week_seconds = StoD(str[3]);
-        __t.IMU_status = StoUL(str[4], 0, 16);
-        __t.Z_accel = StoL(str[5]);
-        __t._Y_accel = StoL(str[6]);
-        __t.X_accel = StoL(str[7]);
-        __t.Z_gyro = StoL(str[8]);
-        __t._Y_gyro = StoL(str[9]);
-        __t.X_gyro = StoL(str[10]);
+        __t.IMU_error = (IMUError)stoUC(str[0], 0, 16);
+        __t.IMU_type = (IMUType)stoUC(str[1]);
+        __t.GNSS_week = stoUS(str[2]);
+        __t.GNSS_week_seconds = stoD(str[3]);
+        __t.IMU_status = stoUL(str[4], 0, 16);
+        __t.Z_accel = stoL(str[5]);
+        __t._Y_accel = stoL(str[6]);
+        __t.X_accel = stoL(str[7]);
+        __t.Z_gyro = stoL(str[8]);
+        __t._Y_gyro = stoL(str[9]);
+        __t.X_gyro = stoL(str[10]);
 
         return true;
     },
@@ -768,12 +768,12 @@ DEFINE_SPAN_MESSAGE_WITH_SHORT_ALIAS(
                               if (str.size() < 6) {
                                   return false;
                               }
-                              __t.ticks_per_rev = StoUS(str[0]);
-                              __t.wheel_vel = StoUS(str[1]);
-                              __t.f_wheel_vel = StoF(str[2]);
-                              __t.reserved[0] = StoUL(str[3]);
-                              __t.reserved[1] = StoUL(str[4]);
-                              __t.cumulative_ticks = StoL(str[5]);
+                              __t.ticks_per_rev = stoUS(str[0]);
+                              __t.wheel_vel = stoUS(str[1]);
+                              __t.f_wheel_vel = stoF(str[2]);
+                              __t.reserved[0] = stoUL(str[3]);
+                              __t.reserved[1] = stoUL(str[4]);
+                              __t.cumulative_ticks = stoL(str[5]);
                               return true;
                           },
                           {
@@ -805,10 +805,10 @@ DEFINE_SPAN_MESSAGE(28, INSUPDATE, PositionOrVelocityType solution_type;
                         }
                         __t.solution_type =
                             PositionOrVelocityTypeFromName(str[0]);
-                        __t.reserved0 = StoL(str[1]);
-                        __t.phase = StoL(str[2]);
-                        __t.reserved1 = StoL(str[3]);
-                        __t.zupt_flag = StoL(str[4]);
+                        __t.reserved0 = stoL(str[1]);
+                        __t.phase = stoL(str[2]);
+                        __t.reserved1 = stoL(str[3]);
+                        __t.zupt_flag = stoL(str[4]);
                         __t.wheel_status = WheelStatusFromName(str[5]);
                         __t.heading_update =
                             HeadingUpdateValuesFromName(str[6]);

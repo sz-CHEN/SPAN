@@ -4,6 +4,7 @@
 #ifdef _WIN32
 #include <Windows.h>
 #endif
+#include <cmath>
 #include <cstdint>
 #include "MapedEnumName.hpp"
 namespace SPAN {
@@ -41,31 +42,55 @@ using Float = float;
 using GPSec = Long;
 using Boolean = ULong;
 
-inline ULong StoUL(const std::string& __str, std::size_t* __idx = 0,
+inline ULong stoUL(const std::string& __str, std::size_t* __idx = 0,
                    int __base = 10) {
     return std::stoul(__str, __idx, __base);
 }
-inline Long StoL(const std::string& __str, std::size_t* __idx = 0,
+inline Long stoL(const std::string& __str, std::size_t* __idx = 0,
                  int __base = 10) {
     return std::stol(__str, __idx, __base);
 }
-inline UShort StoUS(const std::string& __str, std::size_t* __idx = 0,
+inline UShort stoUS(const std::string& __str, std::size_t* __idx = 0,
                     int __base = 10) {
     return std::stoi(__str, __idx, __base);
 }
-inline Short StoS(const std::string& __str, std::size_t* __idx = 0,
+inline Short stoS(const std::string& __str, std::size_t* __idx = 0,
                   int __base = 10) {
     return std::stoi(__str, __idx, __base);
 }
-inline Double StoD(const std::string& __str, std::size_t* __idx = 0) {
+inline Double stoD(const std::string& __str, std::size_t* __idx = 0) {
     return std::stod(__str, __idx);
 }
-inline Float StoF(const std::string& __str, std::size_t* __idx = 0) {
+inline Float stoF(const std::string& __str, std::size_t* __idx = 0) {
     return std::stof(__str, __idx);
 }
-inline UChar StoUC(const std::string& __str, std::size_t* __idx = 0,
+inline UChar stoUC(const std::string& __str, std::size_t* __idx = 0,
                    int __base = 10) {
     return std::stoi(__str, __idx, __base);
+}
+inline Short FtoS(const float& __v){
+    return std::lround(__v);
+}
+inline UShort FtoUS(const float& __v){
+    return std::lround(__v);
+}
+inline Long FtoL(const float& __v){
+    return std::lround(__v);
+}
+inline ULong FtoUL(const float& __v){
+    return std::llround(__v);
+}
+inline Short DtoS(const double& __v){
+    return std::lround(__v);
+}
+inline UShort DtoUS(const double& __v){
+    return std::lround(__v);
+}
+inline Long DtoL(const double& __v){
+    return std::lround(__v);
+}
+inline ULong DtoUL(const double& __v){
+    return std::llround(__v);
 }
 
 DECLARE_ENUM_WITH_TYPE(TimeStatus, UChar,
@@ -966,7 +991,7 @@ DECLARE_ENUM_WITH_TYPE(IMUType, UChar, IMU_UNKNOWN = 0, IMU_HG1700_AG11,
 template <typename T>
 inline void toggleEndian(const T* msg) {
     auto&& len = sizeof(T);
-    for (int i = 0; i < (len >> 1); ++i) {
+    for (std::size_t i = 0; i < (len >> 1); ++i) {
         std::swap(*(((char*)msg) + i), *(((char*)msg) + len - i - 1));
     }
 }

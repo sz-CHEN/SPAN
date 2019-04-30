@@ -35,14 +35,14 @@ struct Header {
             __t.message_ID = MessageIDFromName(str[0]);
             __t.message_length = (UShort)DetailedPortIdentifierFromName(str[1]);
             __t.port_address = (UChar)(__t.message_length & 0xFF);
-            __t.sequence = StoUS(str[2]);
-            __t.idel_time = StoF(str[3]) * 2;
+            __t.sequence = stoUS(str[2]);
+            __t.idel_time = stoF(str[3]) * 2;
             __t.time_status = TimeStatusFromName(str[4]);
-            __t.week = StoUS(str[5]);
-            __t.ms = StoD(str[6]) * 1000;
-            __t.receiver_status = StoUL(str[7], 0, 16);
-            __t.reserved = StoUS(str[8], 0, 16);
-            __t.receiver_S_W_version = StoUS(str[9]);
+            __t.week = stoUS(str[5]);
+            __t.ms = DtoL(stoD(str[6]) * 1000);
+            __t.receiver_status = stoUL(str[7], 0, 16);
+            __t.reserved = stoUS(str[8], 0, 16);
+            __t.receiver_S_W_version = stoUS(str[9]);
             return true;
         } catch (...) {
             return false;
@@ -84,8 +84,8 @@ struct ShortHeader {
         }
         try {
             __t.message_ID = MessageIDFromName(str[0]);
-            __t.week_number = StoUS(str[1]);
-            __t.milliseconds = StoD(str[2]) * 1000;
+            __t.week_number = stoUS(str[1]);
+            __t.milliseconds = DtoUL((stoD(str[2]) * 1000));
             return true;
         } catch (...) {
             return false;
