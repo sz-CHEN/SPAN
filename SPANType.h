@@ -1,9 +1,9 @@
 // Define type described in Firmware Reference Manual
 #ifndef SPAN_TYPE_H
 #define SPAN_TYPE_H
-#ifdef _WIN32
-#include <Windows.h>
-#endif
+// #ifdef _WIN32
+// #include <Windows.h>
+// #endif
 #include <cmath>
 #include <cstdint>
 #include "MapedEnumName.hpp"
@@ -18,7 +18,12 @@ namespace SPAN {
 #define ALIGN_REGION(x) __pragma(pack(x))
 #define ALIGN_ENDREGION __pragma(pack())
 #endif
-
+#if _MSC_VER >= 1900
+#define SPAN_NOEXCEPT noexcept
+#else
+#define SPAN_NOEXCEPT
+#endif
+// #define SPAN_NOEXCEPT noexcept
 #if (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) || \
     (REG_DWORD == REG_DWORD_BIG_ENDIAN)
 #define DEFINE_MARCO_SPAN_MESSAGE_TOGGLE(x) \
@@ -68,30 +73,14 @@ inline UChar stoUC(const std::string& __str, std::size_t* __idx = 0,
                    int __base = 10) {
     return std::stoi(__str, __idx, __base);
 }
-inline Short FtoS(const float& __v){
-    return std::lround(__v);
-}
-inline UShort FtoUS(const float& __v){
-    return std::lround(__v);
-}
-inline Long FtoL(const float& __v){
-    return std::lround(__v);
-}
-inline ULong FtoUL(const float& __v){
-    return std::llround(__v);
-}
-inline Short DtoS(const double& __v){
-    return std::lround(__v);
-}
-inline UShort DtoUS(const double& __v){
-    return std::lround(__v);
-}
-inline Long DtoL(const double& __v){
-    return std::lround(__v);
-}
-inline ULong DtoUL(const double& __v){
-    return std::llround(__v);
-}
+inline Short FtoS(const float& __v) { return std::lround(__v); }
+inline UShort FtoUS(const float& __v) { return std::lround(__v); }
+inline Long FtoL(const float& __v) { return std::lround(__v); }
+inline ULong FtoUL(const float& __v) { return std::llround(__v); }
+inline Short DtoS(const double& __v) { return std::lround(__v); }
+inline UShort DtoUS(const double& __v) { return std::lround(__v); }
+inline Long DtoL(const double& __v) { return std::lround(__v); }
+inline ULong DtoUL(const double& __v) { return std::llround(__v); }
 
 DECLARE_ENUM_WITH_TYPE(TimeStatus, UChar,
                        // enum struct TimeStatus : UChar {
@@ -264,6 +253,8 @@ DECLARE_ENUM_WITH_TYPE(
     PORT_ADDR_COM10_26, PORT_ADDR_COM10_28, PORT_ADDR_COM10_29,
     PORT_ADDR_COM10_30, PORT_ADDR_COM10_31)
 
+#pragma push_macro("PASSTHROUGH")
+#undef PASSTHROUGH
 DECLARE_ENUM_WITH_TYPE(
     MessageID, UShort, LOGLIST = 5, RTCAOBS = 6, GPSEPHEM = 7, IONUTC = 8,
     RTCA1 = 10, RTCAREF = 11, CLOCKMODEL = 16, RAWGPSSUBFRAME = 25,
@@ -338,6 +329,7 @@ DECLARE_ENUM_WITH_TYPE(
     TERRASTARINFO = 1719, VERIPOSINFO = 1728, TERRASTARSTATUS = 1729,
     VERIPOSSTATUS = 1730, MARK3POS = 1738, MARK4POS = 1739,
     SYNCRELINSPVA = 1743, IMURATEPVA = 1778, RTKASSISTSTATUS = 2048)
+#pragma pop_macro("PASSTHROUGH")
 
 DECLARE_ENUM_WITH_TYPE(ClockModelStatus, ULong,
                        // enum struct ClockModelStatus : ULong {
@@ -462,21 +454,19 @@ class ReceiverStatus {
 
    public:
     ReceiverStatus() {}
-    ReceiverStatus(const ULong& value) noexcept : value(value) {}
-    ReceiverStatus(const ULong&& value) noexcept : value(value) {}
-    ReceiverStatus(const ReceiverStatus&) noexcept = default;
-    ReceiverStatus& operator=(const ReceiverStatus&) noexcept = default;
-    ReceiverStatus(ReceiverStatus&&) noexcept = default;
-    ReceiverStatus& operator=(ReceiverStatus&&) noexcept = default;
-    ReceiverStatus& operator=(const ULong& value) noexcept {
+    ReceiverStatus(const ULong& value) SPAN_NOEXCEPT : value(value) {}
+    ReceiverStatus(const ULong&& value) SPAN_NOEXCEPT : value(value) {}
+    ReceiverStatus(const ReceiverStatus&) SPAN_NOEXCEPT = default;
+    ReceiverStatus& operator=(const ReceiverStatus&) SPAN_NOEXCEPT = default;
+    ReceiverStatus& operator=(const ULong& value) SPAN_NOEXCEPT {
         this->value = value;
         return *this;
     }
-    ReceiverStatus& operator=(const ULong&& value) noexcept {
+    ReceiverStatus& operator=(const ULong&& value) SPAN_NOEXCEPT {
         this->value = value;
         return *this;
     }
-    operator const ULong() noexcept { return this->value; }
+    operator const ULong() SPAN_NOEXCEPT { return this->value; }
 };
 
 class MessageType {
@@ -504,21 +494,19 @@ class MessageType {
 
    public:
     MessageType() {}
-    MessageType(const Char& value) noexcept : value(value) {}
-    MessageType(const Char&& value) noexcept : value(value) {}
-    MessageType(const MessageType&) noexcept = default;
-    MessageType& operator=(const MessageType&) noexcept = default;
-    MessageType(MessageType&&) noexcept = default;
-    MessageType& operator=(MessageType&&) noexcept = default;
-    MessageType& operator=(const Char& value) noexcept {
+    MessageType(const Char& value) SPAN_NOEXCEPT : value(value) {}
+    MessageType(const Char&& value) SPAN_NOEXCEPT : value(value) {}
+    MessageType(const MessageType&) SPAN_NOEXCEPT = default;
+    MessageType& operator=(const MessageType&) SPAN_NOEXCEPT = default;
+    MessageType& operator=(const Char& value) SPAN_NOEXCEPT {
         this->value = value;
         return *this;
     }
-    MessageType& operator=(const Char&& value) noexcept {
+    MessageType& operator=(const Char&& value) SPAN_NOEXCEPT {
         this->value = value;
         return *this;
     }
-    operator const Char() noexcept { return this->value; }
+    operator const Char() SPAN_NOEXCEPT { return this->value; }
 };
 
 class INSExtendedSolutionStatus {
@@ -537,24 +525,24 @@ class INSExtendedSolutionStatus {
 
    public:
     INSExtendedSolutionStatus() {}
-    INSExtendedSolutionStatus(const ULong& value) noexcept : value(value) {}
-    INSExtendedSolutionStatus(const ULong&& value) noexcept : value(value) {}
-    INSExtendedSolutionStatus(const INSExtendedSolutionStatus&) noexcept =
-        default;
-    INSExtendedSolutionStatus& operator=(
-        const INSExtendedSolutionStatus&) noexcept = default;
-    INSExtendedSolutionStatus(INSExtendedSolutionStatus&&) noexcept = default;
-    INSExtendedSolutionStatus& operator=(INSExtendedSolutionStatus&&) noexcept =
-        default;
-    INSExtendedSolutionStatus& operator=(const ULong& value) noexcept {
+    INSExtendedSolutionStatus(const ULong& value) SPAN_NOEXCEPT : value(value) {
+    }
+    INSExtendedSolutionStatus(const ULong&& value) SPAN_NOEXCEPT
+        : value(value) {}
+    INSExtendedSolutionStatus(const INSExtendedSolutionStatus&)
+        SPAN_NOEXCEPT = default;
+    INSExtendedSolutionStatus& operator=(const INSExtendedSolutionStatus&)
+        SPAN_NOEXCEPT = default;
+
+    INSExtendedSolutionStatus& operator=(const ULong& value) SPAN_NOEXCEPT {
         this->value = value;
         return *this;
     }
-    INSExtendedSolutionStatus& operator=(const ULong&& value) noexcept {
+    INSExtendedSolutionStatus& operator=(const ULong&& value) SPAN_NOEXCEPT {
         this->value = value;
         return *this;
     }
-    operator const ULong() noexcept { return this->value; }
+    operator const ULong() SPAN_NOEXCEPT { return this->value; }
 };
 
 class ExtendedSolutionStatus {
@@ -581,23 +569,21 @@ class ExtendedSolutionStatus {
 
    public:
     ExtendedSolutionStatus() {}
-    ExtendedSolutionStatus(const UChar& value) noexcept : value(value) {}
-    ExtendedSolutionStatus(const UChar&& value) noexcept : value(value) {}
-    ExtendedSolutionStatus(const ExtendedSolutionStatus&) noexcept = default;
-    ExtendedSolutionStatus& operator=(const ExtendedSolutionStatus&) noexcept =
-        default;
-    ExtendedSolutionStatus(ExtendedSolutionStatus&&) noexcept = default;
-    ExtendedSolutionStatus& operator=(ExtendedSolutionStatus&&) noexcept =
-        default;
-    ExtendedSolutionStatus& operator=(const UChar& value) noexcept {
+    ExtendedSolutionStatus(const UChar& value) SPAN_NOEXCEPT : value(value) {}
+    ExtendedSolutionStatus(const UChar&& value) SPAN_NOEXCEPT : value(value) {}
+    ExtendedSolutionStatus(const ExtendedSolutionStatus&)
+        SPAN_NOEXCEPT = default;
+    ExtendedSolutionStatus& operator=(const ExtendedSolutionStatus&)
+        SPAN_NOEXCEPT = default;
+    ExtendedSolutionStatus& operator=(const UChar& value) SPAN_NOEXCEPT {
         this->value = value;
         return *this;
     }
-    ExtendedSolutionStatus& operator=(const UChar&& value) noexcept {
+    ExtendedSolutionStatus& operator=(const UChar&& value) SPAN_NOEXCEPT {
         this->value = value;
         return *this;
     }
-    operator const UChar() noexcept { return this->value; }
+    operator const UChar() SPAN_NOEXCEPT { return this->value; }
 };
 
 class BESTPOSGPSAndGLONASSSignalUsedMask {
@@ -615,28 +601,25 @@ class BESTPOSGPSAndGLONASSSignalUsedMask {
 
    public:
     BESTPOSGPSAndGLONASSSignalUsedMask() {}
-    BESTPOSGPSAndGLONASSSignalUsedMask(const UChar& value) noexcept
+    BESTPOSGPSAndGLONASSSignalUsedMask(const UChar& value) SPAN_NOEXCEPT
         : value(value) {}
-    BESTPOSGPSAndGLONASSSignalUsedMask(const UChar&& value) noexcept
+    BESTPOSGPSAndGLONASSSignalUsedMask(const UChar&& value) SPAN_NOEXCEPT
         : value(value) {}
     BESTPOSGPSAndGLONASSSignalUsedMask(
-        const BESTPOSGPSAndGLONASSSignalUsedMask&) noexcept = default;
+        const BESTPOSGPSAndGLONASSSignalUsedMask&) SPAN_NOEXCEPT = default;
     BESTPOSGPSAndGLONASSSignalUsedMask& operator=(
-        const BESTPOSGPSAndGLONASSSignalUsedMask&) noexcept = default;
-    BESTPOSGPSAndGLONASSSignalUsedMask(
-        BESTPOSGPSAndGLONASSSignalUsedMask&&) noexcept = default;
-    BESTPOSGPSAndGLONASSSignalUsedMask& operator=(
-        BESTPOSGPSAndGLONASSSignalUsedMask&&) noexcept = default;
-    BESTPOSGPSAndGLONASSSignalUsedMask& operator=(const UChar& value) noexcept {
+        const BESTPOSGPSAndGLONASSSignalUsedMask&) SPAN_NOEXCEPT = default;
+    BESTPOSGPSAndGLONASSSignalUsedMask& operator=(const UChar& value)
+        SPAN_NOEXCEPT {
         this->value = value;
         return *this;
     }
-    BESTPOSGPSAndGLONASSSignalUsedMask& operator=(
-        const UChar&& value) noexcept {
+    BESTPOSGPSAndGLONASSSignalUsedMask& operator=(const UChar&& value)
+        SPAN_NOEXCEPT {
         this->value = value;
         return *this;
     }
-    operator const UChar() noexcept { return this->value; }
+    operator const UChar() SPAN_NOEXCEPT { return this->value; }
 };
 
 class BESTPOSGalileoAndBeiDouSignalUsedMask {
@@ -652,29 +635,25 @@ class BESTPOSGalileoAndBeiDouSignalUsedMask {
 
    public:
     BESTPOSGalileoAndBeiDouSignalUsedMask() {}
-    BESTPOSGalileoAndBeiDouSignalUsedMask(const UChar& value) noexcept
+    BESTPOSGalileoAndBeiDouSignalUsedMask(const UChar& value) SPAN_NOEXCEPT
         : value(value) {}
-    BESTPOSGalileoAndBeiDouSignalUsedMask(const UChar&& value) noexcept
+    BESTPOSGalileoAndBeiDouSignalUsedMask(const UChar&& value) SPAN_NOEXCEPT
         : value(value) {}
     BESTPOSGalileoAndBeiDouSignalUsedMask(
-        const BESTPOSGalileoAndBeiDouSignalUsedMask&) noexcept = default;
+        const BESTPOSGalileoAndBeiDouSignalUsedMask&) SPAN_NOEXCEPT = default;
     BESTPOSGalileoAndBeiDouSignalUsedMask& operator=(
-        const BESTPOSGalileoAndBeiDouSignalUsedMask&) noexcept = default;
-    BESTPOSGalileoAndBeiDouSignalUsedMask(
-        BESTPOSGalileoAndBeiDouSignalUsedMask&&) noexcept = default;
-    BESTPOSGalileoAndBeiDouSignalUsedMask& operator=(
-        BESTPOSGalileoAndBeiDouSignalUsedMask&&) noexcept = default;
-    BESTPOSGalileoAndBeiDouSignalUsedMask& operator=(
-        const UChar& value) noexcept {
+        const BESTPOSGalileoAndBeiDouSignalUsedMask&) SPAN_NOEXCEPT = default;
+    BESTPOSGalileoAndBeiDouSignalUsedMask& operator=(const UChar& value)
+        SPAN_NOEXCEPT {
         this->value = value;
         return *this;
     }
-    BESTPOSGalileoAndBeiDouSignalUsedMask& operator=(
-        const UChar&& value) noexcept {
+    BESTPOSGalileoAndBeiDouSignalUsedMask& operator=(const UChar&& value)
+        SPAN_NOEXCEPT {
         this->value = value;
         return *this;
     }
-    operator const UChar() noexcept { return this->value; }
+    operator const UChar() SPAN_NOEXCEPT { return this->value; }
 };
 
 class BESTSATSSignalMask {
@@ -698,21 +677,20 @@ class BESTSATSSignalMask {
 
    public:
     BESTSATSSignalMask() {}
-    BESTSATSSignalMask(const ULong& value) noexcept : value(value) {}
-    BESTSATSSignalMask(const ULong&& value) noexcept : value(value) {}
-    BESTSATSSignalMask(const BESTSATSSignalMask&) noexcept = default;
-    BESTSATSSignalMask& operator=(const BESTSATSSignalMask&) noexcept = default;
-    BESTSATSSignalMask(BESTSATSSignalMask&&) noexcept = default;
-    BESTSATSSignalMask& operator=(BESTSATSSignalMask&&) noexcept = default;
-    BESTSATSSignalMask& operator=(const ULong& value) noexcept {
+    BESTSATSSignalMask(const ULong& value) SPAN_NOEXCEPT : value(value) {}
+    BESTSATSSignalMask(const ULong&& value) SPAN_NOEXCEPT : value(value) {}
+    BESTSATSSignalMask(const BESTSATSSignalMask&) SPAN_NOEXCEPT = default;
+    BESTSATSSignalMask& operator=(const BESTSATSSignalMask&)
+        SPAN_NOEXCEPT = default;
+    BESTSATSSignalMask& operator=(const ULong& value) SPAN_NOEXCEPT {
         this->value = value;
         return *this;
     }
-    BESTSATSSignalMask& operator=(const ULong&& value) noexcept {
+    BESTSATSSignalMask& operator=(const ULong&& value) SPAN_NOEXCEPT {
         this->value = value;
         return *this;
     }
-    operator const ULong() noexcept { return this->value; }
+    operator const ULong() SPAN_NOEXCEPT { return this->value; }
 };
 
 class IMUStatus {
@@ -837,7 +815,7 @@ class IMUStatus {
 
     enum class OffsetBit_ISA100_100C : ULong { Temperature = 16 };
 
-    constexpr static double ISA100_100CTemperatureScaleRatio = 3.90625e-3;
+    const static double ISA100_100CTemperatureScaleRatio;
 
     enum class CPT : ULong {
         GyroXStatus = 0,
@@ -903,8 +881,8 @@ class IMUStatus {
 
     enum class OffsetBit_ADIS16488_IGMA1 : ULong { Temperature = 16 };
 
-    constexpr static double ADIS16488_IGMA1TemperatureScaleRatio = 0.00565;
-    constexpr static double ADIS16488_IGMA1TemperatureOffset = 25;
+    const static double ADIS16488_IGMA1TemperatureScaleRatio;
+    const static double ADIS16488_IGMA1TemperatureOffset;
 
     enum class Mask_STIM300_IGMS1 : ULong {
         GyroStatus = 0xFF,
@@ -928,8 +906,7 @@ class IMUStatus {
         SystemIntegrityError
     };
 
-    constexpr static double STIM300_IGMS1TemperatureScaleRatio =
-        1 / (double)(2UL << 8);
+    const static double STIM300_IGMS1TemperatureScaleRatio;
 
     enum class BIT_uIMU : ULong {
         ResetAcknowledged = 0,
@@ -953,28 +930,26 @@ class IMUStatus {
 
     enum class OffsetBit_uIMU : ULong { Temperature = 16 };
 
-    constexpr static double uIMUTemperatureScaleRatio = 3.90625e-3;
+    const static double uIMUTemperatureScaleRatio;
 
    private:
     ULong value;
 
    public:
     IMUStatus() {}
-    IMUStatus(const ULong& value) noexcept : value(value) {}
-    IMUStatus(const ULong&& value) noexcept : value(value) {}
-    IMUStatus(const IMUStatus&) noexcept = default;
-    IMUStatus& operator=(const IMUStatus&) noexcept = default;
-    IMUStatus(IMUStatus&&) noexcept = default;
-    IMUStatus& operator=(IMUStatus&&) noexcept = default;
-    IMUStatus& operator=(const ULong& value) noexcept {
+    IMUStatus(const ULong& value) SPAN_NOEXCEPT : value(value) {}
+    IMUStatus(const ULong&& value) SPAN_NOEXCEPT : value(value) {}
+    IMUStatus(const IMUStatus&) SPAN_NOEXCEPT = default;
+    IMUStatus& operator=(const IMUStatus&) SPAN_NOEXCEPT = default;
+    IMUStatus& operator=(const ULong& value) SPAN_NOEXCEPT {
         this->value = value;
         return *this;
     }
-    IMUStatus& operator=(const ULong&& value) noexcept {
+    IMUStatus& operator=(const ULong&& value) SPAN_NOEXCEPT {
         this->value = value;
         return *this;
     }
-    operator const ULong() noexcept { return this->value; }
+    operator const ULong() SPAN_NOEXCEPT { return this->value; }
 };
 
 DECLARE_ENUM_WITH_TYPE(IMUError, UChar, Okay = 0x00, Error)
@@ -998,9 +973,9 @@ inline void toggleEndian(const T* msg) {
 
 #define TOGGLE_SPAN_ENDIAN(x)    \
     {                            \
-        auto tx = x;       \
+        auto tx = x;             \
         SPAN::toggleEndian(&tx); \
-        x = tx;            \
+        x = tx;                  \
     }
 }  // namespace SPAN
 #endif

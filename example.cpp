@@ -7,7 +7,6 @@
 #include "SPANParser.h"
 
 int main(int argc, char const *argv[]) {
-    std::cout << sizeof(SPAN::Header) << "\n";
     std::ifstream gpsFile("BFN16410081_09-06-2018_21-56-27.gps");
     if (!gpsFile.good()) {
         return -1;

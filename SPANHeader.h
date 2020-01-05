@@ -5,7 +5,10 @@
 namespace SPAN {
 // 28
 struct Header {
-    Char sync[3] = {char(0xAA), char(0x44), char(0x12)};  // 0xAA 0x44 0x12
+    Char sync[3];
+    // sync[0] = (Char)0xAA;
+    // sync[1] = (Char)0x44;
+    // sync[2] = (Char)0x12;
     UChar header_length;
     MessageID message_ID;
     MessageType message_type;
@@ -64,7 +67,10 @@ struct Header {
 
 // 12
 struct ShortHeader {
-    Char sync[3] = {char(0xAA), char(0x44), char(0x13)};  //
+    Char sync[3];
+    // sync[0] = (Char)0xAA;
+    // sync[1] = (Char)0x44;
+    // sync[2] = (Char)0x13;
     UChar message_length;
     MessageID message_ID;
     UShort week_number;
